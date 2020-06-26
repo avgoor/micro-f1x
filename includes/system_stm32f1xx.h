@@ -1,0 +1,4 @@
+#ifndef _SYSTEM_STM32F1XX_H_
+#define _SYSTEM_STM32F1XX_H_
+
+#endif /* _SYSTEM_STM32F1XX_H_ */
