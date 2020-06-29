@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-#include "main.hpp"
+#include "main.h"
+#include "gpio.h"
 
 /*
  *  This is running on early stages after startup.s but before main.
@@ -92,42 +93,6 @@ void Sleep(uint32_t time){
 
 /* ===== Initialization end =====  */
 
-class Store{
-	public:
-		Store(int c){ capacity = c; };
-		~Store() = default;
-		int GetCapacity(){ return capacity; };
-	private:
-		int capacity;
-};
-
-struct sGPIOPort {
-    private:
-        GPIO_TypeDef *port;
-    public:
-        sGPIOPort(GPIO_TypeDef *prt){
-            port = prt;
-            RCC->APB2ENR |= 0x0000001CU; /* all ports clock enable */
-            (void) (RCC->APB2ENR & 0x1CU);
-            port->CRH |= 0x00020002U;
-            port->CRL |= 0x00020002U;
-        };
-        ~sGPIOPort() = default;
-        void setPinState(GPIOPin pin, GPIOPinState state){
-            if (state == GPIOSet){
-                port->BSRR = pin;
-            } else {
-                port->BRR  = pin;
-            };
-        };
-        void togglePin(GPIOPin pin){
-            if ((port->ODR & pin) != 0x0U){
-                port->BRR  = pin;
-            }else{
-                port->BSRR = pin;
-            };
-        };
-};
 
 const void DelayCycles(uint32_t cycles){
     while (--cycles){
@@ -136,14 +101,13 @@ const void DelayCycles(uint32_t cycles){
 };
 
 int main(){
-	sGPIOPort pB(GPIOB);
-    sGPIOPort pA(GPIOA);
-    //Sleep(100);
-	pB.setPinState(GPIOPIN_12, GPIOReset);
-    pA.setPinState(static_cast<GPIOPin>(GPIOPIN_0|GPIOPIN_1|GPIOPIN_2), GPIOReset);
+    SET_BIT(RCC->APB2ENR, RCC_APB2ENR_IOPBEN);
+    (void) READ_BIT(RCC->APB2ENR, RCC_APB2ENR_IOPBEN);
+    SET_BIT(GPIOB->CRH, GPIO_CRL_MODE4_1 | GPIO_CRL_MODE0_1);
+
+
     while (1){
-        pB.togglePin(GPIOPIN_12);
-        //DelayCycles(200000);
+        GPIOB->ODR ^= (1UL << 12);
         Sleep(1000);
     };
     return 0;

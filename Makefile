@@ -1,19 +1,19 @@
 PREFIX_DIR=
 BUILD_DIR=build
 APP_NAME=example
-CC=$(PREFIX_DIR)arm-none-eabi-g++
+CC=$(PREFIX_DIR)arm-none-eabi-gcc
 SZ=$(PREFIX_DIR)arm-none-eabi-size
 OBJCOPY=$(PREFIX_DIR)arm-none-eabi-objcopy
-INC_DIR=./includes/
+INCLUDES=-I./includes/ -I./lib/
 OPTIMIZE=3
 DEBUG=1
-START=$(INC_DIR)/startup_stm32f103xb.s
-LD_SCRIPT=-T$(INC_DIR)/STM32F103C8Tx_FLASH.ld
-CPU_FLAGS=-mcpu=cortex-m3 -mthumb
-CPP_STD=-std=c++2a
-CFLAGS=$(CPU_FLAGS) $(CPP_STD) $(LD_SCRIPT) -I$(INC_DIR) -O$(OPTIMIZE) -g$(DEBUG) -specs=nosys.specs
-SOURCES=main.cc $(START)
-LIBS=-lnosys
+START=./lib/startup_stm32f103xb.s
+LD_SCRIPT=-T./lib/STM32F103C8Tx_FLASH.ld
+CPU_FLAGS=-mcpu=cortex-m3 -mthumb -fdata-sections -ffunction-sections -Wl,--gc-sections
+CPP_STD=
+CFLAGS=$(CPU_FLAGS) $(CPP_STD) $(LD_SCRIPT) $(INCLUDES) -O$(OPTIMIZE) -g$(DEBUG) -specs=nano.specs
+SOURCES=main.c $(START) lib/gpio.c
+LIBS=
 
 all: $(BUILD_DIR)/$(APP_NAME).bin
 
