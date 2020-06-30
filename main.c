@@ -15,7 +15,8 @@
  */
 
 #include "main.h"
-#include "gpio.h"
+#include "stm32f1xx_ll_gpio.h"
+#include "stm32f1xx_ll_bus.h"
 
 /*
  *  This is running on early stages after startup.s but before main.
@@ -101,13 +102,24 @@ const void DelayCycles(uint32_t cycles){
 };
 
 int main(){
-    SET_BIT(RCC->APB2ENR, RCC_APB2ENR_IOPBEN);
-    (void) READ_BIT(RCC->APB2ENR, RCC_APB2ENR_IOPBEN);
-    SET_BIT(GPIOB->CRH, GPIO_CRL_MODE4_1 | GPIO_CRL_MODE0_1);
+    LL_APB2_GRP1_EnableClock(LL_APB2_GRP1_PERIPH_GPIOA);
+    LL_APB2_GRP1_EnableClock(LL_APB2_GRP1_PERIPH_GPIOB);
+    LL_APB2_GRP1_EnableClock(LL_APB2_GRP1_PERIPH_GPIOC);
 
+    LL_GPIO_InitTypeDef PortBInit = {0};
+    PortBInit.Pin = LL_GPIO_PIN_ALL;
+    PortBInit.Mode = LL_GPIO_MODE_OUTPUT;
+    PortBInit.OutputType = LL_GPIO_OUTPUT_PUSHPULL;
+    PortBInit.Speed = LL_GPIO_SPEED_FREQ_HIGH;
+    LL_GPIO_Init(GPIOB, &PortBInit);
+    PortBInit.Pin = LL_GPIO_PIN_ALL;
+    PortBInit.Mode = LL_GPIO_MODE_OUTPUT;
+    PortBInit.OutputType = LL_GPIO_OUTPUT_PUSHPULL;
+    PortBInit.Speed = LL_GPIO_SPEED_FREQ_HIGH;
+    LL_GPIO_Init(GPIOA, &PortBInit);
 
     while (1){
-        GPIOB->ODR ^= (1UL << 12);
+        LL_GPIO_TogglePin(GPIOB, LL_GPIO_PIN_12);
         Sleep(1000);
     };
     return 0;
