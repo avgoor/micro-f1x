@@ -110,12 +110,12 @@ int main(){
     PortBInit.Pin = LL_GPIO_PIN_ALL;
     PortBInit.Mode = LL_GPIO_MODE_OUTPUT;
     PortBInit.OutputType = LL_GPIO_OUTPUT_PUSHPULL;
-    PortBInit.Speed = LL_GPIO_SPEED_FREQ_HIGH;
+    PortBInit.Speed = LL_GPIO_SPEED_FREQ_LOW;
     LL_GPIO_Init(GPIOB, &PortBInit);
     PortBInit.Pin = LL_GPIO_PIN_ALL;
     PortBInit.Mode = LL_GPIO_MODE_OUTPUT;
     PortBInit.OutputType = LL_GPIO_OUTPUT_PUSHPULL;
-    PortBInit.Speed = LL_GPIO_SPEED_FREQ_HIGH;
+    PortBInit.Speed = LL_GPIO_SPEED_FREQ_LOW;
     LL_GPIO_Init(GPIOA, &PortBInit);
 
     while (1){
